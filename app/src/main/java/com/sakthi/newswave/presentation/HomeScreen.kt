@@ -1,7 +1,10 @@
 package com.sakthi.newswave.presentation
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -27,6 +31,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,12 +45,13 @@ import com.sakthi.newswave.R
 import com.sakthi.newswave.presentation.components.NewsCard
 import com.sakthi.newswave.presentation.components.RecommendedNews
 import com.sakthi.newswave.presentation.viewmodel.NewsViewModel
+import com.valentinilk.shimmer.shimmer
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltViewModel()) {
 
     val tabs = listOf(
-        " ● For You",
+        "For You",
         "Technology",
         "Finance",
         "Sports",
@@ -56,6 +63,9 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
 
     val headlines = viewModel.headlines.collectAsState()
     val everything = viewModel.otherNews.collectAsState()
+
+    val (selectedTab, setSelectedTab) = remember { mutableStateOf(tabs.first()) }
+
 
     Scaffold(
         modifier = modifier.fillMaxSize()
@@ -123,6 +133,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
                             .height(8.dp)
                     )
 
+                    // Tabs
                     LazyRow(
                         modifier = modifier.padding(top = 4.dp, bottom = 4.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -130,10 +141,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
                         contentPadding = PaddingValues(5.dp)
                     ) {
                         items(tabs) { tab ->
-                            Text(
-                                text = tab,
-                                style = MaterialTheme.typography.titleSmall,
-                            )
+                            Tabs(tab = tab, isSelected = tab == selectedTab, onTabSelected = setSelectedTab)
                         }
                     }
                 }
@@ -167,12 +175,24 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
                     )
 
                     LazyRow(
-                        modifier = modifier.fillMaxHeight(),
+                        modifier = modifier.fillMaxHeight(0.3f),
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        items(headlines.value) { news ->
-                            NewsCard(news = news)
-
+                        if (headlines.value.isEmpty()) {
+                            items(5) { // Show 5 shimmer placeholders
+                                ShimmerPlaceholder(
+                                    modifier = Modifier
+                                        .width(300.dp)
+                                        .height(200.dp)
+                                        .clip(RoundedCornerShape(10.dp))
+                                )
+                            }
+                        } else {
+                            items(headlines.value) { news ->
+                                if (news.title != "[Removed]") {
+                                    NewsCard(news = news)
+                                }
+                            }
                         }
 
                     }
@@ -195,14 +215,48 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
                             .fillMaxWidth()
                     )
 
-                    if (everything.value.isNotEmpty()) {
-                        for (i in 0..40) {
-                        RecommendedNews(news = everything.value[i])
-
+                    if (everything.value.isEmpty()) {
+                        // Show shimmer placeholders
+                        repeat(5) {
+                            ShimmerPlaceholder(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(100.dp)
+                                    .padding(8.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                            )
+                        }
+                    } else {
+                        everything.value.forEach { news ->
+                            if (news.title != "[Removed]") {
+                                RecommendedNews(news = news)
                             }
+                        }
                     }
                 }
             }
         }
     }
+}
+
+
+
+@Composable
+fun Tabs(modifier: Modifier = Modifier, tab: String, isSelected: Boolean, onTabSelected: (String) -> Unit) {
+    Text(
+        text = if (isSelected) "● $tab" else tab,
+        style = MaterialTheme.typography.titleSmall,
+        modifier = modifier.clickable {
+            onTabSelected(tab)
+        }
+    )
+}
+
+@Composable
+fun ShimmerPlaceholder(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .shimmer()
+            .background(Color.Gray.copy(alpha = 0.3f))
+    )
 }

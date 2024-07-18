@@ -26,8 +26,8 @@ class NewsViewModel @Inject constructor(
     val otherNews = _everything.asStateFlow()
 
     init {
-        getHeadLineNews("us")
-        getEverything("science")
+        getHeadLineNews("in")
+        getEverything("tamil")
     }
 
     private fun getHeadLineNews(country: String) {
@@ -62,7 +62,7 @@ class NewsViewModel @Inject constructor(
             getEveryThing(query).collect { result ->
                 when (result) {
                     is NetworkResult.Success -> {
-                        _everything.value = result.data ?: emptyList()
+                        _everything.value = result.data?: emptyList()
                         Log.d("TAG", "getEverything: Success")
                     }
                     is NetworkResult.Loading -> {

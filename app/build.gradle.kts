@@ -110,6 +110,10 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.14")
 
+    //Shimmer
+    implementation("com.valentinilk.shimmer:compose-shimmer:1.3.0")
+
+
 }
 
 kapt {
