@@ -1,7 +1,7 @@
 package com.sakthi.newswave.presentation.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import com.sakthi.newswave.R
 import com.sakthi.newswave.domain.model.News
-import com.valentinilk.shimmer.shimmer
 
 @Composable
 fun NewsCard(modifier: Modifier = Modifier, news: News) {
@@ -48,11 +46,11 @@ fun NewsCard(modifier: Modifier = Modifier, news: News) {
         SubcomposeAsyncImage(
             model = news.imageUrl,
             loading = {
-                CircularProgressIndicator(
-                    modifier = modifier.size(5.dp)
-                )
+                Image(painter = painterResource(id = R.drawable.loader), contentDescription = null,
+                    modifier = modifier.align(Alignment.Center).size(10.dp).padding(40.dp))
             },
             error = {
+                Log.d("TAG", "NewsCard: ${news.imageUrl}")
                 Image(
                 painter = painterResource(id = R.drawable.noimage),
                 contentDescription = null

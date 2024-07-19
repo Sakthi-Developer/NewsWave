@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -60,6 +61,8 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
         "Politics",
         "Science"
     )
+
+    val connectivityStatus = ConnectivityObserver.observe(LocalContext.current).collectAsState(initial = false)
 
     val headlines = viewModel.headlines.collectAsState()
     val everything = viewModel.otherNews.collectAsState()
@@ -102,7 +105,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Morning, Alex👋🏽",
+                            text = "News Wave",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             modifier = modifier.align(Alignment.CenterVertically)
@@ -163,51 +166,66 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
                     )
 
 
-                    Text(
-                        text = "Trending News",
-                        fontWeight = FontWeight.Bold
-                    )
 
-                    Spacer(
-                        modifier = modifier
-                            .height(8.dp)
-                            .fillMaxWidth()
-                    )
 
-                    LazyRow(
-                        modifier = modifier.fillMaxHeight(0.3f),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        if (headlines.value.isEmpty()) {
-                            items(5) { // Show 5 shimmer placeholders
-                                ShimmerPlaceholder(
-                                    modifier = Modifier
-                                        .width(300.dp)
-                                        .height(200.dp)
-                                        .clip(RoundedCornerShape(10.dp))
-                                )
-                            }
-                        } else {
-                            items(headlines.value) { news ->
-                                if (news.title != "[Removed]") {
-                                    NewsCard(news = news)
+                    if(selectedTab == "For You"){
+
+                        Text(
+                            text = "Trending News",
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Spacer(
+                            modifier = modifier
+                                .height(8.dp)
+                                .fillMaxWidth()
+                        )
+                        viewModel.getEverything("bitcoin")
+
+                        LazyRow(
+                            modifier = modifier.fillMaxHeight(0.3f),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+
+                            if (headlines.value.isEmpty()) {
+                                items(5) { // Show 5 shimmer placeholders
+                                    ShimmerPlaceholder(
+                                        modifier = Modifier
+                                            .width(300.dp)
+                                            .height(200.dp)
+                                            .clip(RoundedCornerShape(10.dp))
+                                    )
+                                }
+                            } else {
+                                items(headlines.value) { news ->
+                                    if (news.title != "[Removed]") {
+                                            NewsCard(news = news)
+
+                                    }
                                 }
                             }
+
                         }
+
+                        Spacer(
+                                modifier = modifier
+                                    .height(16.dp)
+                                    .fillMaxWidth()
+                                )
+
+                        Text(
+                            text = "For You",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    } else {
+
+                        viewModel.getEverything(selectedTab)
 
                     }
 
-                    Spacer(
-                        modifier = modifier
-                            .height(16.dp)
-                            .fillMaxWidth()
-                    )
 
-                    Text(
-                        text = "For You",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleMedium
-                    )
+
 
                     Spacer(
                         modifier = modifier
@@ -217,7 +235,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
 
                     if (everything.value.isEmpty()) {
                         // Show shimmer placeholders
-                        repeat(5) {
+                        repeat(10) {
                             ShimmerPlaceholder(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -246,7 +264,7 @@ fun Tabs(modifier: Modifier = Modifier, tab: String, isSelected: Boolean, onTabS
     Text(
         text = if (isSelected) "● $tab" else tab,
         style = MaterialTheme.typography.titleSmall,
-        modifier = modifier.clickable {
+        modifier = modifier.clip(RoundedCornerShape(10.dp)).clickable {
             onTabSelected(tab)
         }
     )

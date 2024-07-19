@@ -1,7 +1,9 @@
 package com.sakthi.newswave.presentation.viewmodel
 
+import ConnectivityObserver
+import android.app.Application
 import android.util.Log
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakthi.newswave.common.NetworkResult
 import com.sakthi.newswave.domain.model.News
@@ -16,8 +18,9 @@ import javax.inject.Inject
 @HiltViewModel
 class NewsViewModel @Inject constructor(
     private val getEveryThing: GetEveryThing,
-    private val getHeadlines: GetHeadlines
-) : ViewModel() {
+    private val getHeadlines: GetHeadlines,
+    application: Application
+) : AndroidViewModel(application) {
 
     private val _news = MutableStateFlow<List<News>>(emptyList())
     val headlines = _news.asStateFlow()
@@ -26,8 +29,20 @@ class NewsViewModel @Inject constructor(
     val otherNews = _everything.asStateFlow()
 
     init {
-        getHeadLineNews("in")
-        getEverything("tamil")
+        viewModelScope.launch {
+            observeConnectivity()
+        }
+        getHeadLineNews("us")
+        getEverything("bitcoin")
+    }
+
+    private suspend fun observeConnectivity() {
+        ConnectivityObserver.observe(getApplication()).collect { isConnected ->
+            if (isConnected) {
+                getHeadLineNews("us")
+                getEverything("bitcoin")
+            }
+        }
     }
 
     private fun getHeadLineNews(country: String) {
@@ -57,7 +72,8 @@ class NewsViewModel @Inject constructor(
         }
     }
 
-    private fun getEverything(query: String) {
+    fun getEverything(query: String) {
+        _everything.value = emptyList()
         viewModelScope.launch {
             getEveryThing(query).collect { result ->
                 when (result) {

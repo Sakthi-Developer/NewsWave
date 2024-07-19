@@ -1,12 +1,9 @@
-package com.sakthi.newswave.presentation.viewmodel
-
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 object ConnectivityObserver {
     private val connectivityStatus = MutableStateFlow(false)
