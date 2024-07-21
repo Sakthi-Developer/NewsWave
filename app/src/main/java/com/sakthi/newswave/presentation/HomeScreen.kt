@@ -1,6 +1,6 @@
 package com.sakthi.newswave.presentation
 
-import android.util.Log
+import ConnectivityObserver
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,11 +19,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -42,14 +42,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.google.gson.Gson
 import com.sakthi.newswave.R
+import com.sakthi.newswave.domain.model.News
 import com.sakthi.newswave.presentation.components.NewsCard
 import com.sakthi.newswave.presentation.components.RecommendedNews
 import com.sakthi.newswave.presentation.viewmodel.NewsViewModel
 import com.valentinilk.shimmer.shimmer
 
+
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltViewModel()) {
+fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltViewModel(), navController: NavController) {
 
     val tabs = listOf(
         "For You",
@@ -62,10 +66,18 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
         "Science"
     )
 
-    val connectivityStatus = ConnectivityObserver.observe(LocalContext.current).collectAsState(initial = false)
+    val connectivityStatus =
+        ConnectivityObserver.observe(LocalContext.current).collectAsState(initial = false)
 
     val headlines = viewModel.headlines.collectAsState()
     val everything = viewModel.otherNews.collectAsState()
+    val technology = viewModel.technology.collectAsState()
+    val finance = viewModel.finance.collectAsState()
+    val sports = viewModel.sports.collectAsState()
+    val business = viewModel.business.collectAsState()
+    val health = viewModel.health.collectAsState()
+    val politics = viewModel.politics.collectAsState()
+    val science = viewModel.science.collectAsState()
 
     val (selectedTab, setSelectedTab) = remember { mutableStateOf(tabs.first()) }
 
@@ -80,6 +92,17 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+
+            if (!connectivityStatus.value) {
+                Text(
+                    text = "No Internet Connection",
+                    color = Color.Red,
+                    fontWeight = FontWeight.Bold,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
 
             Column(
                 modifier = Modifier
@@ -144,7 +167,11 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
                         contentPadding = PaddingValues(5.dp)
                     ) {
                         items(tabs) { tab ->
-                            Tabs(tab = tab, isSelected = tab == selectedTab, onTabSelected = setSelectedTab)
+                            Tabs(
+                                tab = tab,
+                                isSelected = tab == selectedTab,
+                                onTabSelected = setSelectedTab
+                            )
                         }
                     }
                 }
@@ -153,103 +180,90 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
 
 
                 // Content
-                Column(
+                LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
                 ) {
 
-                    Spacer(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .height(8.dp)
-                    )
+                    item {
 
-
-
-
-                    if(selectedTab == "For You"){
-
-                        Text(
-                            text = "Trending News",
-                            fontWeight = FontWeight.Bold
+                        Spacer(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
                         )
+
+
+                        if (selectedTab == "For You") {
+
+                            Text(
+                                text = "Trending News",
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(
+                                modifier = modifier
+                                    .height(8.dp)
+                                    .fillMaxWidth()
+                            )
+
+                            LazyRow(
+                                modifier = modifier.fillMaxHeight(0.3f),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+
+                                if (headlines.value.isEmpty()) {
+                                    items(5) { // Show 5 shimmer placeholders
+                                        ShimmerPlaceholder(
+                                            modifier = Modifier
+                                                .width(300.dp)
+                                                .height(200.dp)
+                                                .clip(RoundedCornerShape(10.dp))
+                                        )
+                                    }
+                                } else {
+                                    items(headlines.value) { news ->
+                                        if (news.title != "[Removed]") {
+                                            NewsCard(news = news, modifier = modifier.clickable {
+                                                navController.navigate("viewNews")
+                                            })
+
+                                        }
+                                    }
+                                }
+
+                            }
+
+                            Spacer(
+                                modifier = modifier
+                                    .height(16.dp)
+                                    .fillMaxWidth()
+                            )
+
+                            Text(
+                                text = "For You",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
 
                         Spacer(
                             modifier = modifier
                                 .height(8.dp)
                                 .fillMaxWidth()
                         )
-                        viewModel.getEverything("bitcoin")
-
-                        LazyRow(
-                            modifier = modifier.fillMaxHeight(0.3f),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        ) {
-
-                            if (headlines.value.isEmpty()) {
-                                items(5) { // Show 5 shimmer placeholders
-                                    ShimmerPlaceholder(
-                                        modifier = Modifier
-                                            .width(300.dp)
-                                            .height(200.dp)
-                                            .clip(RoundedCornerShape(10.dp))
-                                    )
-                                }
-                            } else {
-                                items(headlines.value) { news ->
-                                    if (news.title != "[Removed]") {
-                                            NewsCard(news = news)
-
-                                    }
-                                }
-                            }
-
-                        }
-
-                        Spacer(
-                                modifier = modifier
-                                    .height(16.dp)
-                                    .fillMaxWidth()
-                                )
-
-                        Text(
-                            text = "For You",
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    } else {
-
-                        viewModel.getEverything(selectedTab)
 
                     }
 
-
-
-
-                    Spacer(
-                        modifier = modifier
-                            .height(8.dp)
-                            .fillMaxWidth()
-                    )
-
-                    if (everything.value.isEmpty()) {
-                        // Show shimmer placeholders
-                        repeat(10) {
-                            ShimmerPlaceholder(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(100.dp)
-                                    .padding(8.dp)
-                                    .clip(RoundedCornerShape(10.dp))
-                            )
-                        }
-                    } else {
-                        everything.value.forEach { news ->
-                            if (news.title != "[Removed]") {
-                                RecommendedNews(news = news)
-                            }
-                        }
+                    when (selectedTab) {
+                        "For You" -> newsListScreen(newsItems = everything.value, navController)
+                        "Technology" -> newsListScreen(newsItems = technology.value, navController)
+                        "Finance" -> newsListScreen(newsItems = finance.value, navController)
+                        "Sports" -> newsListScreen(newsItems = sports.value, navController)
+                        "Business" -> newsListScreen(newsItems = business.value, navController)
+                        "Health" -> newsListScreen(newsItems = health.value, navController)
+                        "Politics" -> newsListScreen(newsItems = politics.value, navController)
+                        "Science" -> newsListScreen(newsItems = science.value, navController)
                     }
                 }
             }
@@ -258,16 +272,23 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
 }
 
 
-
 @Composable
-fun Tabs(modifier: Modifier = Modifier, tab: String, isSelected: Boolean, onTabSelected: (String) -> Unit) {
+fun Tabs(
+    modifier: Modifier = Modifier,
+    tab: String,
+    isSelected: Boolean,
+    onTabSelected: (String) -> Unit
+) {
     Text(
         text = if (isSelected) "● $tab" else tab,
         style = MaterialTheme.typography.titleSmall,
-        modifier = modifier.clip(RoundedCornerShape(10.dp)).clickable {
-            onTabSelected(tab)
-        }
+        modifier = modifier
+            .clip(RoundedCornerShape(10.dp))
+            .clickable {
+                onTabSelected(tab)
+            }
     )
+
 }
 
 @Composable
@@ -278,3 +299,26 @@ fun ShimmerPlaceholder(modifier: Modifier = Modifier) {
             .background(Color.Gray.copy(alpha = 0.3f))
     )
 }
+
+fun LazyListScope.newsListScreen(newsItems: List<News>, navController: NavController) {
+
+    if (newsItems.isEmpty()) {
+        items(10) {
+            ShimmerPlaceholder(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .padding(8.dp)
+            )
+        }
+    }
+
+    items(newsItems.filter { it.title.trim() != "[Removed]" }.size) {
+        RecommendedNews(news = newsItems[it], modifier = Modifier.clickable {
+            navController.navigate("viewNews?news=${Gson().toJson(newsItems[it])}")
+        }
+        )
+    }
+
+}
+

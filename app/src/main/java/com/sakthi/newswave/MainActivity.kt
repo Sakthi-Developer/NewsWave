@@ -18,7 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.google.gson.Gson
+import com.sakthi.newswave.domain.model.News
 import com.sakthi.newswave.presentation.HomeScreen
+import com.sakthi.newswave.presentation.ViewNews
 import com.sakthi.newswave.presentation.viewmodel.NewsViewModel
 import com.sakthi.newswave.ui.theme.LocalSpacing
 import com.sakthi.newswave.ui.theme.NewsWaveTheme
@@ -34,18 +42,30 @@ class MainActivity : ComponentActivity() {
             NewsWaveTheme {
 
                 val viewModel = hiltViewModel<NewsViewModel>()
-                /*Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                val navController = rememberNavController()
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                    ) {
 
+                NavHost(navController = navController, startDestination = "home") {
+
+                    composable("home") {
+                        HomeScreen(viewModel = viewModel, navController = navController)
                     }
-                }*/
-                HomeScreen(viewModel = viewModel)
 
+                    composable("viewNews?news={news}",
+                        arguments = listOf(
+                            navArgument("news") {
+                                type = NavType.StringType
+                            }
+                        )
+                        ) {
+
+                        val newsJsonString = it.arguments?.getString("news")
+                        val news = Gson().fromJson(newsJsonString, News::class.java)
+
+                        ViewNews(news = news, navController = navController)
+                    }
+
+                }
 
             }
         }

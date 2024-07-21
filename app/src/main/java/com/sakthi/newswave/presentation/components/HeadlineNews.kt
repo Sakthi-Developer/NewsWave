@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,8 +47,10 @@ fun NewsCard(modifier: Modifier = Modifier, news: News) {
         SubcomposeAsyncImage(
             model = news.imageUrl,
             loading = {
-                Image(painter = painterResource(id = R.drawable.loader), contentDescription = null,
-                    modifier = modifier.align(Alignment.Center).size(10.dp).padding(40.dp))
+                CircularProgressIndicator(
+                    color = Color.Gray,
+                    modifier = modifier.align(Alignment.Center).padding(70.dp)
+                )
             },
             error = {
                 Log.d("TAG", "NewsCard: ${news.imageUrl}")

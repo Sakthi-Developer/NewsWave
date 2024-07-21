@@ -28,19 +28,49 @@ class NewsViewModel @Inject constructor(
     private val _everything = MutableStateFlow<List<News>>(emptyList())
     val otherNews = _everything.asStateFlow()
 
+    private val _technology = MutableStateFlow<List<News>>(emptyList())
+    val technology = _technology.asStateFlow()
+
+    private val _finance = MutableStateFlow<List<News>>(emptyList())
+    val finance = _finance.asStateFlow()
+
+    private val _sports = MutableStateFlow<List<News>>(emptyList())
+    val sports = _sports.asStateFlow()
+
+    private val _business = MutableStateFlow<List<News>>(emptyList())
+    val business = _business.asStateFlow()
+
+    private val _health = MutableStateFlow<List<News>>(emptyList())
+    val health = _health.asStateFlow()
+
+    private val _politics = MutableStateFlow<List<News>>(emptyList())
+    val politics = _politics.asStateFlow()
+
+    private val _science = MutableStateFlow<List<News>>(emptyList())
+    val science = _science.asStateFlow()
+
+    private val _connectivityStatus = MutableStateFlow<List<News>>(emptyList())
+    val connectivityStatus = _connectivityStatus.asStateFlow()
+
     init {
         viewModelScope.launch {
             observeConnectivity()
+
         }
-        getHeadLineNews("us")
-        getEverything("bitcoin")
+
     }
 
     private suspend fun observeConnectivity() {
         ConnectivityObserver.observe(getApplication()).collect { isConnected ->
             if (isConnected) {
-                getHeadLineNews("us")
-                getEverything("bitcoin")
+                getHeadLineNews("in")
+                getEverything("game")
+                getTechnology()
+                getFinance()
+                getSports()
+                getBusiness()
+                getHealth()
+                getPolitics()
             }
         }
     }
@@ -78,17 +108,148 @@ class NewsViewModel @Inject constructor(
             getEveryThing(query).collect { result ->
                 when (result) {
                     is NetworkResult.Success -> {
-                        _everything.value = result.data?: emptyList()
+                        _everything.value = result.data ?: emptyList()
                         Log.d("TAG", "getEverything: Success")
                     }
+
                     is NetworkResult.Loading -> {
-                    Log.d("TAG", "getEverything: Loading")
+                        Log.d("TAG", "getEverything: Loading")
                     }
+
                     is NetworkResult.Error -> {
 
                         Log.d("TAG", "getEverything: ${result.message}")
                     }
 
+                }
+
+            }
+        }
+    }
+
+    fun getTechnology() {
+        viewModelScope.launch {
+            getEveryThing("technology").collect { result ->
+                when (result) {
+                    is NetworkResult.Success -> {
+                        _technology.value = result.data ?: emptyList()
+                    }
+
+                    is NetworkResult.Loading -> {
+                    }
+
+                    is NetworkResult.Error -> {
+                    }
+                }
+            }
+        }
+    }
+
+    fun getFinance() {
+        viewModelScope.launch {
+            getEveryThing("finance").collect { result ->
+                when (result) {
+                    is NetworkResult.Success -> {
+                        _finance.value = result.data ?: emptyList()
+                    }
+
+                    is NetworkResult.Loading -> {
+                    }
+
+                    is NetworkResult.Error -> {
+                    }
+                }
+            }
+        }
+
+    }
+
+    fun getSports() {
+        viewModelScope.launch {
+            getEveryThing("sports").collect { result ->
+                when (result) {
+                    is NetworkResult.Success -> {
+                        _sports.value = result.data ?: emptyList()
+                    }
+
+                    is NetworkResult.Loading -> {
+                    }
+
+                    is NetworkResult.Error -> {
+                    }
+                }
+            }
+        }
+    }
+
+    fun getBusiness() {
+        viewModelScope.launch {
+            getEveryThing("business").collect { result ->
+                when (result) {
+                    is NetworkResult.Success -> {
+                        _business.value = result.data ?: emptyList()
+                    }
+
+                    is NetworkResult.Loading -> {
+                    }
+
+                    is NetworkResult.Error -> {
+                    }
+                }
+            }
+        }
+    }
+
+    fun getHealth() {
+        viewModelScope.launch {
+            getEveryThing("health").collect { result ->
+                when (result) {
+                    is NetworkResult.Success -> {
+                        _health.value = result.data ?: emptyList()
+                    }
+
+                    is NetworkResult.Loading -> {
+
+                    }
+
+                    is NetworkResult.Error -> {
+                    }
+                }
+            }
+        }
+    }
+
+    fun getPolitics() {
+        viewModelScope.launch {
+            getEveryThing("politics").collect { result ->
+                when (result) {
+                    is NetworkResult.Success -> {
+                        _politics.value = result.data ?: emptyList()
+                    }
+
+                    is NetworkResult.Loading -> {
+                    }
+
+                    is NetworkResult.Error -> {
+                    }
+                }
+            }
+        }
+    }
+
+    fun getScience() {
+        viewModelScope.launch {
+            getEveryThing("science").collect { result ->
+                when (result) {
+                    is NetworkResult.Success -> {
+                        _science.value = result.data ?: emptyList()
+                    }
+
+                    is NetworkResult.Loading -> {
+                    }
+
+                    is NetworkResult.Error -> {
+                    }
                 }
 
             }

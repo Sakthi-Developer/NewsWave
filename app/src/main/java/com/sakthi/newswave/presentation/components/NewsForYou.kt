@@ -1,6 +1,7 @@
 package com.sakthi.newswave.presentation.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -55,7 +56,7 @@ fun RecommendedNews(modifier: Modifier = Modifier,
             loading = {
                 CircularProgressIndicator(
                     color = Color.Gray,
-                    modifier = modifier.align(Alignment.Center).size(20.dp)
+                    modifier = modifier.align(Alignment.Center).padding(50.dp)
                 )
             },
             modifier = modifier
@@ -79,7 +80,7 @@ fun RecommendedNews(modifier: Modifier = Modifier,
         ){
 
             Text(text = news.title.trim(),
-                color = Color.Black,
+                color = if (isSystemInDarkTheme()) Color.White else Color.Black,
                 fontWeight = FontWeight.Bold,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
