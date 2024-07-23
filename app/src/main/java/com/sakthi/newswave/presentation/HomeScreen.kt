@@ -1,6 +1,7 @@
 package com.sakthi.newswave.presentation
 
 import ConnectivityObserver
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -55,16 +57,7 @@ import com.valentinilk.shimmer.shimmer
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltViewModel(), navController: NavController) {
 
-    val tabs = listOf(
-        "For You",
-        "Technology",
-        "Finance",
-        "Sports",
-        "Business",
-        "Health",
-        "Politics",
-        "Science"
-    )
+
 
     val connectivityStatus =
         ConnectivityObserver.observe(LocalContext.current).collectAsState(initial = false)
@@ -79,8 +72,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
     val politics = viewModel.politics.collectAsState()
     val science = viewModel.science.collectAsState()
 
-    val (selectedTab, setSelectedTab) = remember { mutableStateOf(tabs.first()) }
-
+    val selectedTab = viewModel.selectedTab.collectAsState().value
 
     Scaffold(
         modifier = modifier.fillMaxSize()
@@ -97,9 +89,11 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
                 Text(
                     text = "No Internet Connection",
                     color = Color.Red,
+                    textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
                     modifier = modifier
                         .fillMaxWidth()
+                        .padding(8.dp)
                         .align(Alignment.CenterHorizontally)
                 )
             }
@@ -150,6 +144,9 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
                                 modifier = modifier
                                     .size(22.dp)
                                     .clip(shape = RoundedCornerShape(10.dp))
+                                    .clickable {
+                                        viewModel.makeToast("No notifications")
+                                    }
                             )
                         }
                     }
@@ -166,11 +163,11 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
                         verticalAlignment = Alignment.CenterVertically,
                         contentPadding = PaddingValues(5.dp)
                     ) {
-                        items(tabs) { tab ->
+                        items(viewModel.tabs) { tab ->
                             Tabs(
                                 tab = tab,
                                 isSelected = tab == selectedTab,
-                                onTabSelected = setSelectedTab
+                                onTabSelected = viewModel::onTabSelected
                             )
                         }
                     }
@@ -225,7 +222,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: NewsViewModel = hiltVie
                                     items(headlines.value) { news ->
                                         if (news.title != "[Removed]") {
                                             NewsCard(news = news, modifier = modifier.clickable {
-                                                navController.navigate("viewNews")
+                                                navController.navigate("viewNews?news=${Gson().toJson(news)}")
                                             })
 
                                         }

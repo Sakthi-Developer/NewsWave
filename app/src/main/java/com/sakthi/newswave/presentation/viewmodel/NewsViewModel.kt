@@ -3,6 +3,7 @@ package com.sakthi.newswave.presentation.viewmodel
 import ConnectivityObserver
 import android.app.Application
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakthi.newswave.common.NetworkResult
@@ -52,6 +53,21 @@ class NewsViewModel @Inject constructor(
     private val _connectivityStatus = MutableStateFlow<List<News>>(emptyList())
     val connectivityStatus = _connectivityStatus.asStateFlow()
 
+
+    val tabs = listOf(
+        "For You",
+        "Technology",
+        "Finance",
+        "Sports",
+        "Business",
+        "Health",
+        "Politics",
+        "Science"
+    )
+
+    private val _selectedTab = MutableStateFlow(tabs.first())
+    val selectedTab = _selectedTab.asStateFlow()
+
     init {
         viewModelScope.launch {
             observeConnectivity()
@@ -63,8 +79,8 @@ class NewsViewModel @Inject constructor(
     private suspend fun observeConnectivity() {
         ConnectivityObserver.observe(getApplication()).collect { isConnected ->
             if (isConnected) {
-                getHeadLineNews("in")
-                getEverything("game")
+                getHeadLineNews("us")
+                getEverything("business")
                 getTechnology()
                 getFinance()
                 getSports()
@@ -80,7 +96,9 @@ class NewsViewModel @Inject constructor(
             getHeadlines(country).collect { result ->
                 when (result) {
                     is NetworkResult.Success -> {
-                        _news.value = result.data ?: emptyList()
+
+                        val temp = result.data?: emptyList()
+                        _news.value = temp.filter { it.title.trim() != "[Removed]" }
                         Log.d("TAG", "getHeadLineNews: Success")
                     }
 
@@ -254,5 +272,13 @@ class NewsViewModel @Inject constructor(
 
             }
         }
+    }
+
+    fun makeToast(message: String) {
+        Toast.makeText(getApplication(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    fun onTabSelected(s: String) {
+        _selectedTab.value = s
     }
 }

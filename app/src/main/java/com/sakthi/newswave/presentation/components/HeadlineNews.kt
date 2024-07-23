@@ -3,7 +3,9 @@ package com.sakthi.newswave.presentation.components
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,10 +49,7 @@ fun NewsCard(modifier: Modifier = Modifier, news: News) {
         SubcomposeAsyncImage(
             model = news.imageUrl,
             loading = {
-                CircularProgressIndicator(
-                    color = Color.Gray,
-                    modifier = modifier.align(Alignment.Center).padding(70.dp)
-                )
+
             },
             error = {
                 Log.d("TAG", "NewsCard: ${news.imageUrl}")
