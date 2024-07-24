@@ -13,9 +13,13 @@ Share News: Share interesting articles with friends and family.
 # Technologies Used
 
 Language: Kotlin
+
 Architecture: MVVM (Model-View-ViewModel) with use cases
+
 Components: Retrofit for networking
+
 UI Toolkit: Jetpack Compose
+
 Other: Coroutines for asynchronous programming
 
 # Screenshots
