@@ -21,9 +21,9 @@ Other: Coroutines for asynchronous programming, LiveData for reactive UI
 # Screenshots
 
 <p align="center">      
-    <img src="https://github.com/user-attachments/assets/5a3df173-cc78-4a39-b1c5-5eb80d8df8ba" width="200" style="margin: 0 50px;">    
-    <img src="https://github.com/user-attachments/assets/87112eaa-6ecc-4076-b0d8-f821debda218" width="200" style="margin: 0 200px;">
-    <img src="https://github.com/user-attachments/assets/bf3d706b-8ee6-438e-8dbb-4acbb2d4d784" width="200" style="margin: 0 50px;">
-    <img src="https://github.com/user-attachments/assets/dfa472c1-06f0-47f5-824f-97957d914659" width="200" style="margin: 0 50px;">
+    <img src="https://github.com/user-attachments/assets/5a3df173-cc78-4a39-b1c5-5eb80d8df8ba" width="200" style="margin: 0 20px;">    
+    <img src="https://github.com/user-attachments/assets/87112eaa-6ecc-4076-b0d8-f821debda218" width="200" style="margin: 0 20px;">
+    <img src="https://github.com/user-attachments/assets/bf3d706b-8ee6-438e-8dbb-4acbb2d4d784" width="200" style="margin: 0 20px;">
+    <img src="https://github.com/user-attachments/assets/dfa472c1-06f0-47f5-824f-97957d914659" width="200" style="margin: 0 20px;">
 
 </p>
