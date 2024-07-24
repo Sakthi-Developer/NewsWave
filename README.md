@@ -20,7 +20,7 @@ Other: Coroutines for asynchronous programming, LiveData for reactive UI
 
 # Screenshots
 
-<p align="center">
+<p align="start">
     <img src="https://github.com/user-attachments/assets/5a3df173-cc78-4a39-b1c5-5eb80d8df8ba" width="200">
     &nbsp;&nbsp;&nbsp;&nbsp;
     <img src="https://github.com/user-attachments/assets/87112eaa-6ecc-4076-b0d8-f821debda218" width="200">
