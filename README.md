@@ -1,6 +1,6 @@
 # Newswave
 
-Newswave is a modern news app that provides users with top headlines and personalized news recommendations from various sources.
+News Wave is a modern news app that provides users with top headlines and personalized news recommendations from various sources.
 
 # Features
 
